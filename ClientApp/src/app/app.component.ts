@@ -42,9 +42,6 @@ export class AppComponent implements OnInit {
     rightLight.position.y = 2;
     rightLight.position.z = -4;
 
-    var loader = new THREE.TextureLoader();
-    planeMaterial.map = loader.load("/concrete.jpg");
-
     var numberTexture = new THREE.CanvasTexture(
       document.querySelector("#webgl")
     );
@@ -58,7 +55,7 @@ export class AppComponent implements OnInit {
     });
 
     var sprite = new THREE.Sprite(spriteMaterial);
-    sprite.position.set(250, 250, 250);
+    sprite.position.set(1, 1, 1);
     sprite.scale.set(60, 60, 1);
 
     var folder1 = gui.addFolder('light_1');
@@ -185,7 +182,7 @@ export class AppComponent implements OnInit {
   }
 
   updateScreenPosition(renderer, camera, annotation) {
-    var vector = new THREE.Vector3(250, 250, 250);
+    var vector = new THREE.Vector3(1, 1, 1);
     var canvas = renderer.domElement;
 
     vector.project(camera);

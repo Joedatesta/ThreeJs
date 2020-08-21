@@ -1,5 +1,12 @@
 <div class="annotation">
-  <p><strong>Cube</strong></p>
-  <p>In geometry, a cube is a three-dimensional solid object bounded by six square faces, facets or sides, with three meeting at each vertex.</p>
+  <p><strong>Enter Measurement</strong></p>
+  <form action="/api/SetMeasure" method="POST">
+    <div class="form-group">
+      <label for="txtMeasure">Measurement</label>
+      <input type="text" class="form-text text-muted" id="txtMeasure" placeholder="Enter Measurement" aria-describedby="measureHelp">
+      <small id="measureHelp" class="form-text text-muted">Will be stored in the database</small>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
 </div>
 <div id="webgl"></div>
