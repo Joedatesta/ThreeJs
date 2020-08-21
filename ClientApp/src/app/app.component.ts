@@ -11,6 +11,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 export class AppComponent implements OnInit {
   title = 'ClientApp';
   scene: THREE.Scene;
+  spriteBehindObject: any; 
   
   ngOnInit(): void {
     this.scene = this.init();
@@ -19,11 +20,12 @@ export class AppComponent implements OnInit {
   init () {
     var scene = new THREE.Scene();
     var gui = new DAT.GUI();
+    var annotation:any = document.querySelector(".annotation");
 
-    var sphereMaterial = this.getMaterial('standard', 0xffffff);
+    var sphereMaterial = this.getStandardMaterial(0xffffff);
     var sphere = this.getSphere(sphereMaterial, 1, 24);
 
-    var planeMaterial = this.getMaterial('standard', 'rgb(255, 255, 255)');
+    var planeMaterial = this.getStandardMaterial(0xffffff);
     var plane = this.getPlane(planeMaterial, 30);
 
     var leftLight = this.getSpotLight(1, 'rgb(255, 220, 100)');
@@ -114,7 +116,7 @@ export class AppComponent implements OnInit {
     
     var controls = new OrbitControls( camera, renderer.domElement );
     
-    this.update(renderer, scene, camera, controls);
+    this.animate(renderer, scene, camera, controls, sprite, sphere, annotation);
 
     return scene;
   }
@@ -128,31 +130,12 @@ export class AppComponent implements OnInit {
     return obj;
   }
   
-  getMaterial(type, color) {
-    var selectedMaterial;
+  getStandardMaterial(color) {
     var materialOptions = {
-      color: color === undefined ? 'rgb(255, 255, 255)' : color,
+      color: color,
     };
-  
-    switch (type) {
-      case 'basic':
-        selectedMaterial = new THREE.MeshBasicMaterial(materialOptions);
-        break;
-      case 'lambert':
-        selectedMaterial = new THREE.MeshLambertMaterial(materialOptions);
-        break;
-      case 'phong':
-        selectedMaterial = new THREE.MeshPhongMaterial(materialOptions);
-        break;
-      case 'standard':
-        selectedMaterial = new THREE.MeshStandardMaterial(materialOptions);
-        break;
-      default: 
-        selectedMaterial = new THREE.MeshBasicMaterial(materialOptions);
-        break;
-    }
-  
-    return selectedMaterial;
+      
+    return new THREE.MeshStandardMaterial(materialOptions);
   }
   
   getSpotLight(intensity, color) {
@@ -178,9 +161,40 @@ export class AppComponent implements OnInit {
     return obj;
   }
   
-  update(renderer, scene, camera, controls) {
+  animate(renderer, scene, camera, controls, sprite, sphere, annotation) {
     controls.update();
+    this.render(renderer, scene, camera, sprite, sphere, annotation);
+    requestAnimationFrame(() => this.animate(renderer, scene, camera, controls, sprite, sphere, annotation));
+  }
+
+  render(renderer, scene, camera, sprite, sphere, annotation) {
     renderer.render(scene, camera);
-    requestAnimationFrame(() => this.update(renderer, scene, camera, controls));
+    this.updateAnnotationOpacity(camera, sprite, sphere);
+    this.updateScreenPosition(renderer, camera, annotation);
+  }
+
+  updateAnnotationOpacity(camera, sprite, sphere) {
+    var meshDistance = camera.position.distanceTo(sphere.position);
+    var spriteDistance = camera.position.distanceTo(sprite.position);
+    this.spriteBehindObject = spriteDistance > meshDistance;
+    sprite.material.opacity = this.spriteBehindObject ? 0.25 : 1;
+
+    // Do you want a number that changes size according to its position?
+    // Comment out the following line and the `::before` pseudo-element.
+    sprite.material.opacity = 0;
+  }
+
+  updateScreenPosition(renderer, camera, annotation) {
+    var vector = new THREE.Vector3(250, 250, 250);
+    var canvas = renderer.domElement;
+
+    vector.project(camera);
+
+    vector.x = Math.round((0.5 + vector.x / 2) * (canvas.width / window.devicePixelRatio));
+    vector.y = Math.round((0.5 - vector.y / 2) * (canvas.height / window.devicePixelRatio));
+
+    annotation.style.top = `${vector.y}px`;
+    annotation.style.left = `${vector.x}px`;
+    annotation.style.opacity = this.spriteBehindObject ? 0.25 : 1;
   }
 }
