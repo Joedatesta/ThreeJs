@@ -26,5 +26,11 @@ namespace intuitive.Controllers
             return mapper.Map<List<Measure>, List<MeasureResource>>(measures);
         }
 
+        [HttpPut("/api/measures/{id}")]
+        public IActionResult UpdateMeasures(int id, [FromBody] MeasureResource measure)
+        {
+            return Ok(measure); //error: tunnelling socket could not be established, cause=socket hang up
+        }
+
     }
 }

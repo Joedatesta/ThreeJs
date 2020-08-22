@@ -10,10 +10,6 @@ namespace intuitive.Models
         
         [Required]
         [StringLength(255)]
-        public string Name { get; set; }
-
-        [Required]
-        [StringLength(255)]
         public string Value { get; set; }
     }
 }
